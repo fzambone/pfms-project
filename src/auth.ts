@@ -1,12 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { SvelteKitAuth } from "@auth/sveltekit";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "@auth/sveltekit/providers/credentials";
 import bcrypt from "bcrypt";
-
-// Initialize Prisma Client
-const prisma = new PrismaClient(); // Use `prisma` for clarity in Auth.js context
+import { prisma } from "./lib/server/db";
 
 // Define the credentials schema for login
 const LoginSchema = z.object({
