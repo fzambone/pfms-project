@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @unique @db.Text @default(cuid()) // cuid is a unique identifier that is 25 characters long
+  email     String   @unique @db.Text // Email is unique and stored as text
+  password  String   @db.Text // Hashed Password is stored as text
+  sessions  Session[] // A user can have many sessions
+  createdAt DateTime @default(now()) // The date and time the user was created
+  updatedAt DateTime @updatedAt // The date and time the user was last updated
+}
+
+model Session {
+  id        String   @id @unique @db.Text @default(cuid()) // cuid is a unique identifier that is 25 characters long
+  userId    String   @db.Text // Foreign key to User.id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade means that if a user is deleted, all their sessions will be deleted
+  expiresAt DateTime // The date and time the session will expire
+  createdAt DateTime @default(now()) // The date and time the session was created
+  updatedAt DateTime @updatedAt // The date and time the session was last updated
+}
