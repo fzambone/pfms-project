@@ -1,5 +1,5 @@
-import { SvelteKitAuth } from "@auth/sveltekit";
-import { handle } from "./auth"; // Import `handle` from my `auth.ts` file
+import { SvelteKitAuth } from "@auth/sveltekit"; // Import `handle` from my `auth.ts` file
+import { handle } from "$lib/auth";
 
 export { handle }; // Export the `handle` function provided by Auth.js
 

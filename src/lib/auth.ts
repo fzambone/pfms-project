@@ -3,7 +3,7 @@ import { SvelteKitAuth } from "@auth/sveltekit";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "@auth/sveltekit/providers/credentials";
 import bcrypt from "bcrypt";
-import { prisma } from "./lib/server/db";
+import { prisma } from "$lib/server/db";
 
 // Define the credentials schema for login
 const LoginSchema = z.object({
@@ -71,9 +71,9 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 
     // Session configuration
     session: {
-        strategy: "database",
+        strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60, // 30 days
-        updateAge: 24 * 60 * 60, // 24 hours
+        // updateAge: 24 * 60 * 60, // 24 hours
     },
     // Callbacks (usefull for customizing behavior and extending session data)
     callbacks: {
