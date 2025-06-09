@@ -14,20 +14,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid()) // cuid is a unique identifier that is 25 characters long
+  userId            String // Foreign key to User.id
+  type              String // The type of account (e.g. "oauth", "email", "password")
+  provider          String // The provider of the account (e.g. "google", "github", "twitter")
+  providerAccountId String // The ID of the account on the provider
+  refresh_token     String? @db.Text // The refresh token for the account
+  access_token      String? @db.Text // The access token for the account
+  expires_at        Int? // The date and time the account will expire
+  token_type        String? // The type of token for the account
+  scope             String? // The scope of the account
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User.id
+
+  @@unique([provider, providerAccountId]) // Unique constraint on provider and providerAccountId
+}
+
 model User {
-  id        String   @id @unique @db.Text @default(cuid()) // cuid is a unique identifier that is 25 characters long
-  email     String   @unique @db.Text // Email is unique and stored as text
-  password  String   @db.Text // Hashed Password is stored as text
-  sessions  Session[] // A user can have many sessions
-  createdAt DateTime @default(now()) // The date and time the user was created
-  updatedAt DateTime @updatedAt // The date and time the user was last updated
+  id            String    @id @default(cuid()) // cuid is a unique identifier that is 25 characters long
+  name          String? // The name of the user
+  email         String?   @unique // Email is unique and stored as text
+  emailVerified DateTime? // The date and time the email was verified
+  image         String? // The image of the user
+  password      String? // Added for credential provider if you implement it
+
+  accounts      Account[] // A user can have many accounts
+  sessions      Session[] // A user can have many sessions
 }
 
 model Session {
-  id        String   @id @unique @db.Text @default(cuid()) // cuid is a unique identifier that is 25 characters long
-  userId    String   @db.Text // Foreign key to User.id
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade means that if a user is deleted, all their sessions will be deleted
-  expiresAt DateTime // The date and time the session will expire
-  createdAt DateTime @default(now()) // The date and time the session was created
-  updatedAt DateTime @updatedAt // The date and time the session was last updated
+  id           String   @id @default(cuid()) // cuid is a unique identifier that is 25 characters long
+  sessionToken String   @unique // The session token
+  userId       String // Foreign key to User.id
+  expires      DateTime // The date and time the session will expire
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User.id
+}
+
+model VerificationToken {
+  identifier String // The identifier of the verification token
+  token      String   @unique // The token of the verification token
+  expires    DateTime // The date and time the verification token will expire
+
+  @@unique([identifier, token]) // Unique constraint on identifier and token
 }
